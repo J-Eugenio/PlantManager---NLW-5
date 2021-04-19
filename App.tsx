@@ -6,7 +6,7 @@ import { ButtonTest, Container } from './styles';
 export default function App() {
 
   function msg(){
-    console.log('TESTE MDG');
+    console.log('TESTE MDG!');
     
   }
   return (
