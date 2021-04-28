@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/core';
 import { EnviromentButton } from '../components/EnviromentButton';
 
 import { Header } from '../components/Header';
@@ -43,7 +44,8 @@ export function PlantSelect() {
 
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [loadedAll, setLoadedAll] = useState(false);
+
+  const navigation = useNavigation();
 
   // eslint-disable-next-line consistent-return
   function handleEnvironmentSelected(environment: string) {
@@ -56,15 +58,20 @@ export function PlantSelect() {
     setFilteredPlants(filtered);
   }
 
+  function handlePlantSelect(plant: PlantProps) {
+    navigation.navigate('PlantSave', { plant });
+  }
+
   // eslint-disable-next-line consistent-return
   async function fetchPlants() {
     const { data } = await api
-      .get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`);
+      .get(`/plants?_sort=name&_order=asc& _page=${page}&_limit=8`);
 
     if (!data) {
       return setLoading(true);
     }
 
+    if (!data) return setLoading(true);
     if (page > 1) {
       setPlants((oldValue) => [...oldValue, ...data]);
       setFilteredPlants((oldValue) => [...oldValue, ...data]);
@@ -72,7 +79,6 @@ export function PlantSelect() {
       setPlants(data);
       setFilteredPlants(data);
     }
-
     setLoading(false);
     setLoadingMore(false);
   }
@@ -90,7 +96,7 @@ export function PlantSelect() {
   useEffect(() => {
     async function fetchEnvironment() {
       const { data } = await api
-        .get('plants_enviroments?_sort=title&order=asc');
+        .get('/plants_environments?_sort=title&_order=asc');
       setEnvironments([{
         key: 'all',
         title: 'Todos',
@@ -128,6 +134,7 @@ export function PlantSelect() {
       <View>
         <FlatList
           data={environments}
+          keyExtractor={(item) => String(item.key)}
           renderItem={({ item }) => (
             <EnviromentButton
               title={item.title}
@@ -144,8 +151,12 @@ export function PlantSelect() {
       <View style={styles.plants}>
         <FlatList
           data={filteredPlants}
+          keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <PlantCardPrimary data={item} />
+            <PlantCardPrimary
+              data={item}
+              onPress={() => handlePlantSelect(item)}
+            />
           )}
           showsVerticalScrollIndicator={false}
           numColumns={2}
@@ -165,8 +176,6 @@ export function PlantSelect() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: colors.background,
   },
   header: {
