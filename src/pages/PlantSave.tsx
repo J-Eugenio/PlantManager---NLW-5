@@ -58,6 +58,10 @@ export function PlantSave() {
     }
   }
 
+  function handleOpenDateTimePickerForAndroid() {
+    // setShowDatePicker();
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.plantInfo}>
@@ -100,6 +104,18 @@ export function PlantSave() {
             onChange={handleChangeTime}
             style={styles.datePicker}
           />
+          )
+        }
+
+        {
+          Platform.OS === 'android' && (
+            <TouchableOpacity
+              onPress={handleOpenDateTimePickerForAndroid}
+            >
+              <Text style={styles.dateTimePickerText}>
+                Mudar Horário
+              </Text>
+            </TouchableOpacity>
           )
         }
 
@@ -176,6 +192,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   datePicker: {
+
+  },
+  dateTimePickerText: {
 
   },
 });
